@@ -19,7 +19,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <sys/time.h>
-#include <signal.h>
 
 #include "TBVGG3_ADA16.h"
 
@@ -217,7 +216,6 @@ void processScanArea(Window w)
 int main(int argc, char *argv[])
 {
     srand(time(0));
-    signal(SIGPIPE, SIG_IGN);
 
     // intro
     rainbow_printf("James William Fletcher (github.com/mrbid)\n");
