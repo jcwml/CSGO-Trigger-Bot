@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
         printf("CS:GO Win: 0x%lX\n\n", twin);
 
     // load network
-    if(TBVGG3_LoadNetwork(&net, "a83.save") < 0)
+    if(TBVGG3_LoadNetwork(&net, "ADA16_1094.save") < 0)
         printf("!! Starting with no training data. (failed to load network file)\n\n");
 
     //
