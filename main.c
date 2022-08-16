@@ -45,11 +45,11 @@ int tc = 0;
 TBVGG3_Network net;
 
 // hyperparameters that you can change
-#define SCAN_VARIANCE 1.f
-#define SCAN_DELAY 1000
-#define ACTIVATION_SENITIVITY 0.55
-#define REPEAT_ACTIVATION 0
-#define FIRE_RATE_LIMIT_MS 600
+#define SCAN_VARIANCE 1.f           // how much to randomly wiggle the scan area between scans
+#define SCAN_DELAY 1000             // scan frequency delay in microseconds
+#define ACTIVATION_SENITIVITY 0.55  // minimum activation sensitivity to fire a shot
+#define REPEAT_ACTIVATION 0         // how many positive activations in a row before firing a shot
+#define FIRE_RATE_LIMIT_MS 600      // delay between firing shots in milliseconds
 
 
 /***************************************************
