@@ -113,7 +113,7 @@ int key_is_pressed(KeySym ks)
 {
     char keys_return[32];
     XQueryKeymap(d, keys_return);
-    KeyCode kc2 = XKeysymToKeycode(dpy, ks);
+    KeyCode kc2 = XKeysymToKeycode(d, ks);
     int isPressed = !!(keys_return[kc2 >> 3] & (1 << (kc2 & 7)));
     return isPressed;
 }
