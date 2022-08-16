@@ -1,6 +1,8 @@
 # CSGO-Trigger-Bot
 A CS:GO Trigger Bot using a Convolutional Neural Network (CNN).
 
+This uses [TBVGG3](https://github.com/TFNN/TBVGG3) and is based on work by [James William Fletcher](https://github.com/mrbid).
+
 ```
 L-CTRL + L-ALT = Toggle BOT ON/OFF
 R-CTRL + R-ALT = Toggle HOTKEYS ON/OFF
