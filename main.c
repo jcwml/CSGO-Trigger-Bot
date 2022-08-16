@@ -34,9 +34,6 @@ const uint rd2 = r0/2;      // total pixels divided by two
 uint x=0, y=0;
 
 float input[3][28][28];
-    float r[r2] = {0};
-    float g[r2] = {0};
-    float b[r2] = {0};
 
 Display *d;
 int si;
@@ -186,9 +183,9 @@ void processScanArea(Window w)
             c.pixel = XGetPixel(img, x, y);
             XQueryColor(d, map, &c);
 
-            r[i] = (float)c.red;
-            g[i] = (float)c.green;
-            b[i] = (float)c.blue;
+            input[0][x][y] = (((float)c.red)-128.f)*0.003921568859f;
+            input[1][x][y] = (((float)c.green)-128.f)*0.003921568859f;
+            input[2][x][y] = (((float)c.blue)-128.f)*0.003921568859f;
 
             i++;
         }
@@ -196,18 +193,6 @@ void processScanArea(Window w)
 
     // free image block
     XFree(img);
-
-    /////////////////
-    // -1 to 1 normalised
-    for(uint j = 0; j < 28; j++)
-    {
-        for(uint k = 0; k < 28; k++)
-        {
-            input[0][j][k] = (r[(j*28)+k]-128.f)*0.003921568859f;
-            input[1][j][k] = (g[(j*28)+k]-128.f)*0.003921568859f;
-            input[2][j][k] = (b[(j*28)+k]-128.f)*0.003921568859f;
-        }
-    }
 }
 
 /***************************************************
