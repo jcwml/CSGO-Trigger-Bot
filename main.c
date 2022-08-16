@@ -358,7 +358,7 @@ int main(int argc, char *argv[])
             if(hotkeys == 1 && key_is_pressed(XK_G)) // print activation when pressed
             {
                 processScanArea(twin);
-                const float ret = TBVGG3_Process(&net, &input[0], NO_LEARN)*0.01f;
+                const float ret = TBVGG3_Process(&net, &input[0], NO_LEARN);
                 if(ret > ACTIVATION_SENITIVITY)
                 {
                     printf("\e[93mA: %f\e[0m\n", ret);
@@ -393,7 +393,7 @@ int main(int argc, char *argv[])
                 {
                     processScanArea(twin);
                     int TRIGGER = 1; // low detections get one shot
-                    const float activation = TBVGG3_Process(&net, &input[0], NO_LEARN)*0.01f;
+                    const float activation = TBVGG3_Process(&net, &input[0], NO_LEARN);
                     // if(activation > 0.8){TRIGGER = 3;} // mid range gets 3 shots
                     // if(activation > 0.9){TRIGGER = 6;} // high range gets 6 shots
 
