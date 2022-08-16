@@ -22,7 +22,7 @@
 #include <X11/Xutil.h>
 #include <sys/time.h>
 
-#include "TBVGG3_ADA16.h"
+#include "TBVGG3_ADA.h"
 
 #pragma GCC diagnostic ignored "-Wgnu-folding-constant"
 
