@@ -182,7 +182,8 @@ void processScanArea(Window w)
             XColor c;
             c.pixel = XGetPixel(img, x, y);
             XQueryColor(d, map, &c);
-
+            
+            // -1 to +1 normalised
             input[0][x][y] = (((float)c.red)-128.f)*0.003921568859f;
             input[1][x][y] = (((float)c.green)-128.f)*0.003921568859f;
             input[2][x][y] = (((float)c.blue)-128.f)*0.003921568859f;
