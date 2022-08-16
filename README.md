@@ -1,7 +1,7 @@
 # CSGO-Trigger-Bot
 A CS:GO Trigger Bot using a Convolutional Neural Network (CNN).
 
-This uses [TBVGG3](https://github.com/TFNN/TBVGG3) and is based on work by [James William Fletcher](https://github.com/mrbid).
+This uses [TBVGG3](https://github.com/TFNN/TBVGG3) and is based on work by [James William Fletcher](https://github.com/mrbid). Weights trained using the TBVGG3 [example project](https://github.com/TFNN/TBVGG3/blob/main/main.c) provided.
 
 ```
 L-CTRL + L-ALT = Toggle BOT ON/OFF
