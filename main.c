@@ -47,7 +47,7 @@ int tc = 0;
 TBVGG3_Network net;
 
 // hyperparameters that you can change
-#define SCAN_VARIANCE 1
+#define SCAN_VARIANCE 1.f
 #define SCAN_DELAY 1000
 #define ACTIVATION_SENITIVITY 0.55
 #define REPEAT_ACTIVATION 0
