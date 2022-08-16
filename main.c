@@ -7,6 +7,8 @@
 --------------------------------------------------
 
     Trained using TBVGG3_ADA16 (github.com/TFNN)
+    
+    You can reduce ACTIVATION_SENITIVITY and increase REPEAT_ACTIVATION etc.
 
     Compile: clang aimbot.c -Ofast -mavx -mfma -lX11 -lm -o aim
 
