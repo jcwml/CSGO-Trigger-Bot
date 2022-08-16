@@ -9,6 +9,8 @@
     Trained using TBVGG3_ADA16 (github.com/TFNN)
     
     You can reduce ACTIVATION_SENITIVITY and increase REPEAT_ACTIVATION etc.
+    
+    You may want to install espeak via your package manager.
 
     Compile: clang main.c -Ofast -mavx -mfma -lX11 -lm -o aim
 
