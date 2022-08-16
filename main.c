@@ -57,10 +57,10 @@ TBVGG3_Network net;
 /***************************************************
    ~~ Utils
 */
-uint qRand(const uint min, const uint max)
+uint qRand(const float min, const float max)
 {
     static float rndmax = 1.f/(float)RAND_MAX;
-    return ( ( ((float)rand()) * rndmax ) * ((max+1)-min) ) + min;
+    return ( ( ( ((float)rand()) * rndmax ) * (max-min) ) + min ) + 0.5f;
 }
 
 uint64_t microtime()
