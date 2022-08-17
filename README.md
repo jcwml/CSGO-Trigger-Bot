@@ -10,7 +10,7 @@ L-CTRL + L-ALT = Toggle BOT ON/OFF
 R-CTRL + R-ALT = Toggle HOTKEYS ON/OFF
 P = Toggle crosshair.
 G = Get activation for reticule area.
-H = Get scans per second.
+H = Hold pressed to print scans per second.
 
 Make the crosshair a single green pixel.
 OR disable the game crosshair and use the crosshair provided by this bot.
