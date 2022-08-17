@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
     rainbow_printf("R-CTRL + R-ALT = Toggle HOTKEYS ON/OFF\n");
     rainbow_printf("P = Toggle crosshair.\n");
     rainbow_printf("G = Get activation for reticule area.\n");
-    rainbow_printf("H = Get scans per second.\n");
+    rainbow_printf("H = Hold pressed to print scans per second.\n");
     printf("\e[38;5;76m");
     printf("\nMake the crosshair a single green pixel.\nOR disable the game crosshair and use the crosshair provided by this bot.\nOR if your monitor provides a crosshair use that. (this is best)\n\n");
     printf("This bot will only auto trigger when W,A,S,D & L-SHIFT are not being pressed.\n(so when your not moving in game, aka stationary)\n\nL-SHIFT allows you to disable the bot while stationary if desired.\n\n");
