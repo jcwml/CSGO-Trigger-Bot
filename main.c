@@ -6,7 +6,7 @@
     Improved by Jim C. Williams. (github.com/jcwml)
 --------------------------------------------------
 
-    Trained using TBVGG3_ADA16 (github.com/TFNN)
+    Trained using TBVGG3_ADA (github.com/TFNN)
     
     You can reduce ACTIVATION_SENITIVITY and increase REPEAT_ACTIVATION etc.
     
@@ -22,6 +22,7 @@
 #include <X11/Xutil.h>
 #include <sys/time.h>
 
+#define ADA8
 #include "TBVGG3_ADA.h"
 
 #pragma GCC diagnostic ignored "-Wgnu-folding-constant"
@@ -49,7 +50,7 @@ TBVGG3_Network net;
 #define SCAN_DELAY 1000             // scan frequency delay in microseconds
 #define ACTIVATION_SENITIVITY 0.55f // minimum activation sensitivity to fire a shot
 #define REPEAT_ACTIVATION 0         // how many positive activations in a row before firing a shot
-#define FIRE_RATE_LIMIT_MS 600      // delay between firing shots in milliseconds
+#define FIRE_RATE_LIMIT_MS 300      // delay between firing shots in milliseconds
 
 
 /***************************************************
@@ -233,14 +234,25 @@ int main(int argc, char *argv[])
     // get graphics context
     gc = DefaultGC(d, si);
 
+    // load network
+#ifdef ADA8
+    if(TBVGG3_LoadNetwork(&net, "ADA8_085.save") < 0)
+        printf("!! Starting with no training data. (failed to load network file)\n\n");
+    else
+        printf("ADA8 Network Loaded.\n\n");
+#endif
+
+#ifdef ADA16
+    if(TBVGG3_LoadNetwork(&net, "ADA16_1094.save") < 0)
+        printf("!! Starting with no training data. (failed to load network file)\n\n");
+    else
+        printf("ADA16 Network Loaded.\n\n");
+#endif
+
     // find window
     twin = findWindow(d, 0, "Counter-Strike");
     if(twin != 0)
         printf("CS:GO Win: 0x%lX\n\n", twin);
-
-    // load network
-    if(TBVGG3_LoadNetwork(&net, "ADA16_1094.save") < 0)
-        printf("!! Starting with no training data. (failed to load network file)\n\n");
 
     //
     
