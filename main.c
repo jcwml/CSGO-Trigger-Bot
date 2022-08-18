@@ -457,6 +457,39 @@ int main(int argc, char *argv[])
                         speakS("cx off");
                     }
                 }
+
+                // sample capture toggle
+                if(key_is_pressed(XK_L))
+                {
+                    if(sample_capture == 0)
+                    {
+                        char* home = getenv("HOME");
+                        sprintf(targets_dir, "%s/Desktop/targets", home);
+                        mkdir(targets_dir, 0777);
+                        sample_capture = 1;
+                        usleep(100000);
+                        reprint();
+                        speakS("sc on");
+                    }
+                    else
+                    {
+                        sample_capture = 0;
+                        usleep(100000);
+                        reprint();
+                        speakS("sc off");
+                    }
+                }
+
+                // sample capture
+                static uint64_t scd = 0;
+                if(sample_capture == 1 && key_is_pressed(XK_E) && microtime() > scd)
+                {
+                    char name[32];
+                    sprintf(name, "%s/%i.ppm", targets_dir, rand());
+                    saveSample(twin, name);
+                    printf("\e[93mMANUAL SAVE:\e[38;5;123m %s\n", name);
+                    scd = microtime() + 350000;
+                }
             }
             
             if(hotkeys == 1 && key_is_pressed(XK_G)) // print activation when pressed
@@ -547,39 +580,6 @@ int main(int argc, char *argv[])
                     {
                         tc = 0;
                     }
-                }
-
-                // sample capture toggle
-                if(key_is_pressed(XK_L))
-                {
-                    if(sample_capture == 0)
-                    {
-                        char* home = getenv("HOME");
-                        sprintf(targets_dir, "%s/Desktop/targets", home);
-                        mkdir(targets_dir, 0777);
-                        sample_capture = 1;
-                        usleep(100000);
-                        reprint();
-                        speakS("sc on");
-                    }
-                    else
-                    {
-                        sample_capture = 0;
-                        usleep(100000);
-                        reprint();
-                        speakS("sc off");
-                    }
-                }
-
-                // sample capture
-                static uint64_t scd = 0;
-                if(sample_capture == 1 && key_is_pressed(XK_E) && microtime() > scd)
-                {
-                    char name[32];
-                    sprintf(name, "%s/%i.ppm", targets_dir, rand());
-                    saveSample(twin, name);
-                    printf("\e[93mMANUAL SAVE:\e[38;5;123m %s\n", name);
-                    scd = microtime() + 350000;
                 }
             }
 
