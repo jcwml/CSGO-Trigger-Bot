@@ -21,6 +21,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <sys/time.h>
+#include <sys/stat.h>
 
 //#define ADA8
 #include "TBVGG3_ADA.h"
@@ -40,13 +41,20 @@ float input[3][28][28];
 
 Display *d;
 int si;
-Window twin;
+Window twin = 0;
 GC gc = 0;
 int tc = 0;
 TBVGG3_Network net;
 
+uint sample_capture = 0;
+char targets_dir[256];
+
+uint enable = 0;
+uint crosshair = 0;
+uint hotkeys = 1;
+
 // hyperparameters that you can change
-#define SCAN_VARIANCE 1.f           // how much to randomly wiggle the scan area between scans
+#define SCAN_VARIANCE 2.f           // how much to randomly wiggle the scan area between scans
 #define SCAN_DELAY 1000             // scan frequency delay in microseconds
 #define ACTIVATION_SENITIVITY 0.55f // minimum activation sensitivity to fire a shot
 #define REPEAT_ACTIVATION 0         // how many positive activations in a row before firing a shot
@@ -60,6 +68,53 @@ uint qRand(const float min, const float max)
 {
     static float rndmax = 1.f/(float)RAND_MAX;
     return ( ( ( ((float)rand()) * rndmax ) * (max-min) ) + min ) + 0.5f;
+}
+
+void writePPM(const char* file, const unsigned char* data)
+{
+    FILE* f = fopen(file, "wb");
+    if(f != NULL)
+    {
+        fprintf(f, "P6 28 28 255 ");
+        fwrite(data, 1, r2i, f);
+        fclose(f);
+    }
+}
+
+void saveSample(Window w, const char* name)
+{
+    // get image block
+    XImage *img = XGetImage(d, w, x-rd2, y-rd2, r0, r0, AllPlanes, XYPixmap);
+    if(img == NULL)
+        return;
+
+    // colour map
+    const Colormap map = XDefaultColormap(d, si);
+
+    // extract colour information
+    unsigned char rgbbytes[r2i] = {0};
+    int i = 0;
+    for(int y = 0; y < SCAN_AREA; y++)
+    {
+        for(int x = 0; x < SCAN_AREA; x++)
+        {
+            XColor c;
+            c.pixel = XGetPixel(img, x, y);
+            XQueryColor(d, map, &c);
+
+            // scale ushort to uchar (if you don't compile with -Ofast this can cause a division by zero)
+            rgbbytes[i]   = (unsigned char)(c.red / 257);
+            rgbbytes[++i] = (unsigned char)(c.green / 257);
+            rgbbytes[++i] = (unsigned char)(c.blue / 257);
+            i++;
+        }
+    }
+
+    // free image block
+    XFree(img);
+
+    // save to file
+    writePPM(name, &rgbbytes[0]);
 }
 
 uint64_t microtime()
@@ -199,6 +254,52 @@ void processScanArea(Window w)
     XFree(img);
 }
 
+void reprint()
+{
+    system("clear");
+    rainbow_printf("James William Fletcher (github.com/mrbid)\n");
+    rainbow_printf("Jim C. Williams (github.com/jcwml)\n\n");
+    rainbow_printf("L-CTRL + L-ALT = Toggle BOT ON/OFF\n");
+    rainbow_printf("R-CTRL + R-ALT = Toggle HOTKEYS ON/OFF\n");
+    rainbow_printf("P = Toggle crosshair.\n");
+    rainbow_printf("L = Toggle sample capture.\n");
+    rainbow_printf("E = Capture sample.\n");
+    rainbow_printf("G = Get activation for reticule area.\n");
+    rainbow_printf("H = Hold pressed to print scans per second.\n");
+    printf("\e[38;5;76m");
+    printf("\nMake the crosshair a single green pixel.\nOR disable the game crosshair and use the crosshair provided by this bot.\nOR if your monitor provides a crosshair use that. (this is best)\n\n");
+    printf("This bot will only auto trigger when W,A,S,D & L-SHIFT are not being pressed.\n(so when your not moving in game, aka stationary)\n\nL-SHIFT allows you to disable the bot while stationary if desired.\n\n");
+    printf("This dataset is trained only on Counter-Terrorist heads\nso you need to play as Terrorist forces.\n\n");
+    printf("\e[38;5;123m");
+
+    if(twin != 0)
+    {
+        printf("CS:GO Win: 0x%lX\n\n", twin);
+
+        if(enable == 1)
+            rainbow_line_printf("BOT: \033[1m\e[32mON\e[0m\n");
+        else
+            rainbow_line_printf("BOT: \033[1m\e[31mOFF\e[0m\n");
+
+        if(hotkeys == 1)
+            rainbow_line_printf("HOTKEYS: \033[1m\e[32mON\e[0m\n");
+        else
+            rainbow_line_printf("HOTKEYS: \033[1m\e[31mOFF\e[0m\n");
+
+        if(sample_capture == 1)
+            rainbow_line_printf("SAMPLE CAPTURE: \033[1m\e[32mON\e[0m\n");
+        else
+            rainbow_line_printf("SAMPLE CAPTURE: \033[1m\e[31mOFF\e[0m\n");
+
+        if(crosshair == 1)
+            rainbow_line_printf("CROSSHAIR: \033[1m\e[32mON\e[0m\n");
+        else
+            rainbow_line_printf("CROSSHAIR: \033[1m\e[31mOFF\e[0m\n");
+
+        printf("\n");
+    }
+}
+
 /***************************************************
    ~~ Program Entry Point
 */
@@ -207,18 +308,7 @@ int main(int argc, char *argv[])
     srand(time(0));
 
     // intro
-    rainbow_printf("James William Fletcher (github.com/mrbid)\n");
-    rainbow_printf("Jim C. Williams (github.com/jcwml)\n\n");
-    rainbow_printf("L-CTRL + L-ALT = Toggle BOT ON/OFF\n");
-    rainbow_printf("R-CTRL + R-ALT = Toggle HOTKEYS ON/OFF\n");
-    rainbow_printf("P = Toggle crosshair.\n");
-    rainbow_printf("G = Get activation for reticule area.\n");
-    rainbow_printf("H = Hold pressed to print scans per second.\n");
-    printf("\e[38;5;76m");
-    printf("\nMake the crosshair a single green pixel.\nOR disable the game crosshair and use the crosshair provided by this bot.\nOR if your monitor provides a crosshair use that. (this is best)\n\n");
-    printf("This bot will only auto trigger when W,A,S,D & L-SHIFT are not being pressed.\n(so when your not moving in game, aka stationary)\n\nL-SHIFT allows you to disable the bot while stationary if desired.\n\n");
-    printf("This dataset is trained only on Counter-Terrorist heads\nso you need to play as Terrorist forces.\n\n");
-    printf("\e[38;5;123m");
+    reprint();
 
     // open display 0
     d = XOpenDisplay(":0");
@@ -252,16 +342,12 @@ int main(int argc, char *argv[])
     // find window
     twin = findWindow(d, 0, "Counter-Strike");
     if(twin != 0)
-        printf("CS:GO Win: 0x%lX\n\n", twin);
+        reprint();
 
     //
     
     XEvent event;
     memset(&event, 0x00, sizeof(event));
-    
-    uint enable = 0;
-    uint crosshair = 0;
-    uint hotkeys = 1;
 
     //
     
@@ -277,6 +363,12 @@ int main(int argc, char *argv[])
             {
                  // get window
                 twin = findWindow(d, 0, "Counter-Strike");
+                if(twin == 0)
+                {
+                    printf("Failed to detect a CS:GO window.\n");
+                    sleep(1);
+                    continue;
+                }
 
                 // get center window point (x & y)
                 XWindowAttributes attr;
@@ -293,15 +385,15 @@ int main(int argc, char *argv[])
                 event.xbutton.window = twin;
 
                 enable = 1;
-                usleep(300000);
-                rainbow_line_printf("BOT: ON\n");
+                usleep(100000);
+                reprint();
                 speakS("on");
             }
             else
             {
                 enable = 0;
-                usleep(300000);
-                rainbow_line_printf("BOT: OFF\n");
+                usleep(100000);
+                reprint();
                 speakS("off");
             }
         }
@@ -332,15 +424,15 @@ int main(int argc, char *argv[])
                 if(hotkeys == 0)
                 {
                     hotkeys = 1;
-                    usleep(300000);
-                    printf("HOTKEYS: ON [%ix%i]\n", x, y);
+                    usleep(100000);
+                    reprint();
                     speakS("hk on");
                 }
                 else
                 {
                     hotkeys = 0;
-                    usleep(300000);
-                    rainbow_line_printf("HOTKEYS: OFF\n");
+                    usleep(100000);
+                    reprint();
                     speakS("hk off");
                 }
             }
@@ -353,15 +445,15 @@ int main(int argc, char *argv[])
                     if(crosshair == 0)
                     {
                         crosshair = 1;
-                        usleep(300000);
-                        rainbow_line_printf("CROSSHAIR: ON\n");
+                        usleep(100000);
+                        reprint();
                         speakS("cx on");
                     }
                     else
                     {
                         crosshair = 0;
-                        usleep(300000);
-                        rainbow_line_printf("CROSSHAIR: OFF\n");
+                        usleep(100000);
+                        reprint();
                         speakS("cx off");
                     }
                 }
@@ -417,6 +509,14 @@ int main(int argc, char *argv[])
                         // did we activate enough times in a row to be sure this is a target?
                         if(tc > REPEAT_ACTIVATION)
                         {
+                            if(sample_capture == 1)
+                            {
+                                char name[32];
+                                sprintf(name, "%s/%i.ppm", targets_dir, rand());
+                                saveSample(twin, name);
+                                printf("SAVED: %s\n", name);
+                            }
+
                             // fire off as many shots as we need to
                             for(int i = 0; i < TRIGGER; i++)
                             {
@@ -447,6 +547,39 @@ int main(int argc, char *argv[])
                     {
                         tc = 0;
                     }
+                }
+
+                // sample capture toggle
+                if(key_is_pressed(XK_L))
+                {
+                    if(sample_capture == 0)
+                    {
+                        char* home = getenv("HOME");
+                        sprintf(targets_dir, "%s/Desktop/targets", home);
+                        mkdir(targets_dir, 0777);
+                        sample_capture = 1;
+                        usleep(100000);
+                        reprint();
+                        speakS("sc on");
+                    }
+                    else
+                    {
+                        sample_capture = 0;
+                        usleep(100000);
+                        reprint();
+                        speakS("sc off");
+                    }
+                }
+
+                // sample capture
+                static uint64_t scd = 0;
+                if(sample_capture == 1 && key_is_pressed(XK_E) && microtime() > scd)
+                {
+                    char name[32];
+                    sprintf(name, "%s/%i.ppm", targets_dir, rand());
+                    saveSample(twin, name);
+                    printf("\e[93mMANUAL SAVE:\e[38;5;123m %s\n", name);
+                    scd = microtime() + 350000;
                 }
             }
 
