@@ -128,7 +128,7 @@ uint64_t microtime()
 
 void rainbow_printf(const char* text)
 {
-    static unsigned int base_clr = 0;
+    static unsigned char base_clr = 0;
     if(base_clr == 0)
         base_clr = (rand()%125)+55;
     
@@ -147,7 +147,7 @@ void rainbow_printf(const char* text)
 
 void rainbow_line_printf(const char* text)
 {
-    static unsigned int base_clr = 0;
+    static unsigned char base_clr = 0;
     if(base_clr == 0)
         base_clr = (rand()%125)+55;
     
