@@ -244,8 +244,6 @@ void processScanArea(Window w)
             input[0][x][y] = (((float)c.red)-128.f)*0.003921568859f;
             input[1][x][y] = (((float)c.green)-128.f)*0.003921568859f;
             input[2][x][y] = (((float)c.blue)-128.f)*0.003921568859f;
-
-            i++;
         }
     }
 
