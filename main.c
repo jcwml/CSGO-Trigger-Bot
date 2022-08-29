@@ -10,7 +10,8 @@
     
     You can reduce ACTIVATION_SENITIVITY and increase REPEAT_ACTIVATION etc.
     
-    You may want to install espeak via your package manager.
+    You may want to install espeak and libx11-dev via your package manager.
+    sudo apt install espeak libx11-dev
 
     Compile: clang main.c -Ofast -mavx -mfma -lX11 -lm -o aim
 
