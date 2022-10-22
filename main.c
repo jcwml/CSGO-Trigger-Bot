@@ -13,7 +13,7 @@
     You may want to install espeak and libx11-dev via your package manager.
     sudo apt install espeak libx11-dev
 
-    Compile: clang main.c -Ofast -mavx -mfma -lX11 -lm -o aim
+    Compile: clang main.c -Ofast -mfma -lX11 -lm -o aim
 
 */
 
